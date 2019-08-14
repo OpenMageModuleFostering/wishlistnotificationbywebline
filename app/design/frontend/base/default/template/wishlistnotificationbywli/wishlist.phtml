@@ -1,0 +1,161 @@
+<?php $settings=$this->getNotificationConfig(); ?>
+<style>
+@media (max-width: 767px) {
+  .notification_popup {
+    width: 100%;
+    margin-bottom: 15px;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+.notification_popup {
+float: left;
+width:700px;
+ background-color:<?php echo $settings['bgcolor'] ?>;
+ color : <?php echo $settings['fontcolor'] ?>;
+ font-size:<?php echo $settings['fontsize']."px" ?>;
+ font-family:<?php echo $settings['fonttype'] ?>;
+}
+.content{color:<?php echo $settings['fontcolor'] ?>;
+font-size:<?php echo $settings['fontsize']."px" ?>;}
+</style>
+
+<?php 
+	   $version=Mage::getVersion();
+	  // Checks Version of Current Magento Start
+	   if($version<='1.9.2.1' and $version>='1.6')
+	   {
+	   	// Checks If Module is Enabled or Not From System Start
+		   if (Mage::getStoreConfig('wishlist/general/active') and ($settings['allow']==1)) 
+		   {
+		   	$customer = Mage::getSingleton('customer/session')->getCustomer();
+		   	$cust_id=$customer->getId();
+		   	// Checks Customer is Logged in or not with valid id Start
+			   if($customer->getId()==$cust_id)
+				{
+					$wishlist = Mage::getModel('wishlist/wishlist')->loadByCustomer($customer, true);
+		    		$_productCollection = $wishlist->getItemCollection();
+		    		// Checks Items Exists in Wishlist of Partiular Customer Start
+		    		if(count($_productCollection)>0)
+		    		{
+		    			$product_ids=array();
+						foreach ($_productCollection as $item)
+						{
+							$product_logs_collection=Mage::getModel('wishlistnotificationbywli/wishlistnotificationbywli')
+							->getCollection()->addFieldToFilter('product_entity_id', array('eq' => $item->getProductId()))
+							->addFieldToFilter('created_time', array('gt' => $item->getAddedAt()));
+						 	foreach($product_logs_collection as $ids)
+						 	{
+						 		$product_ids[]=$ids->getProductEntityId();	
+						 	}
+						}
+						if(count($product_ids)>0) // Checks If Any Item Found In Custom Module Table With Less Price Start
+						{
+							$wishlist1 = Mage::getModel('wishlist/wishlist')->loadByCustomer($customer, true);
+							$_productCollection1 = $wishlist1->getItemCollection()->addFieldToFilter('product_id', 
+							array('in' => array($product_ids)));
+							$wishlistData=$_productCollection1->getData();
+	 						if(!empty($wishlistData))
+	 						{?>
+	 			<!-- Popup Code -->
+	     			<div class='notification_popup'>
+						<form name='notification_form' method='post' 
+						action='<?php echo Mage::getUrl('wishlistnotificationbywli/account/addtocart') ?>'>				
+						<input name="form_key" type="hidden" 
+						value="<?php echo Mage::getSingleton('core/session')->getFormKey();; ?>">
+					<table class="datatable">
+						<thead>
+						<tr>
+							<td colspan='5'> <h3 class='content'> <?php echo $settings['content']; ?> </h3> </td>
+						</tr>
+						   <tr>
+							   <th width='20%'>Product Image</th>
+							   <th>Product Details</th>
+							   <th>Old Price</th>
+  							   <th>Current Price</th>
+							   <th>Qty</th>
+							   <th>Add to Cart</th>
+                    		   </tr>
+   		 				</thead>
+	    				<tbody>
+	    				<?php foreach ($_productCollection1 as $item) { ?>
+                      <tr>
+                            <td>
+		                         <?php  $wishlist_item_id=$item['wishlist_item_id'];
+		                         	     $product_id=$item->getProductId();
+		                         	     Mage::getSingleton('core/session')->setProductId($product_id);
+		                         	     Mage::getSingleton('core/session')->setWishlistItemId($wishlist_item_id);
+		                         ?>
+		                         <?php 
+		                         $item = Mage::getModel('catalog/product')->setStoreId($item->getStoreId())
+		                         ->load($item->getProductId());
+										if ($item->getId()) {?>
+		                         <?php $productType = $item->getTypeID();
+		                               $product_url = $item->getProductUrl(); ?>
+		                         	<img src="<?php echo Mage::helper('catalog/image')->init
+					  					  	($item, 'small_image')->resize(113, 113); ?>" width="200" height="100" />
+					  					  	<?php } ?>
+	     			    				</td>
+                            <td> <h3 class="product-name"> <?php echo $item->getName(); ?> </h3> </td>
+                          <td> 
+                            <div class="cart-cell">
+			    						<div class="price-box"> <span class="regular-price">
+		   			 				<span><strike> <?php 
+		   			 					$product_logs_collection=Mage::getModel('wishlistnotificationbywli/wishlistnotificationbywli')->getCollection()->addFieldToFilter('product_entity_id', array('eq' => $product_id));
+		   			 				echo $formattedPrice = 
+		   			 						Mage::helper('core')->currency($product_logs_collection->getData()[0]['old_price'], true); ?> </strike></span>
+                               </div>
+									  </div>
+									</td>
+									<td>
+									 <div class="cart-cell">
+			    						<div class="price-box"> <span class="regular-price">
+		  								<span class="price"><?php echo $formattedPrice = 
+		  										Mage::helper('core')->currency($product_logs_collection->getData()[0]['new_price'], true); ?> </span> </span>
+                               </div>
+									  </div>
+									</td>
+								<td>
+									<div class="add-to-cart-alt">
+									 		<input type="text" class="input-text qty validate-not-negative-number" 
+									 		name="qty" value="1" readonly> 
+									</div>
+								</td>
+								<td>
+									<?php if($productType=='simple') { ?>
+										<a href='<?php echo Mage::getUrl('wishlistnotificationbywli/account/addtocart',
+											array('proId'=>$product_id, 'wish_id'=>$wishlist_item_id)) ?>'>	
+											<button type="button" title="Add to Cart" class="button btn-cart"><span>
+											<span>Add to Cart</span></span></button> </a>
+										<?php } 
+										else { ?>
+										<a href='<?php echo $product_url  ?>'>	<button type="button" title="Add to Cart" 
+										class="button btn-cart"><span><span>Add to Cart</span></span></button> </a>
+										<?php } ?>
+								</td>
+                 		</tr>
+                 		<?php } ?>
+                	</tbody>
+               	</table>
+             	</form>
+	     			</div>
+	     			<!-- Popup Code -->
+	 						<?php
+	 						}
+							// Get Wishlist Collection of Product Having Price Become Less End
+							
+						} // If Any Item Found In Custom Module Table with Less Price End
+						
+					  //Load Custom Wishlist Notification Collection End
+		    		}
+		    		// Checks Items Exists in Wishlist of Partiular Customer End					
+				}
+				// Checks Customer is Logged in or not with valid id End
+		   }
+		  // Checks If Module is Enabled or Not From System Start End 
+	   }
+	  // Checks Version of Current Magento End
+?>
+

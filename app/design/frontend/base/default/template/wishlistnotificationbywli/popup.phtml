@@ -1,0 +1,50 @@
+<?php
+$version=Mage::getVersion();
+if($version<='1.9.2.1' and $version>='1.6')
+{
+	$settings=$this->getNotificationConfig();
+	if (Mage::getStoreConfig('wishlist/general/active') and ($settings['allow']==1))
+	{
+		$customer = Mage::getSingleton('customer/session')->getCustomer();
+		$cust_id=$customer->getId();
+		// Checks Customer is Logged in or not with valid id Start
+		if($customer->getId()==$cust_id)
+		{
+			$wishlist = Mage::getModel('wishlist/wishlist')->loadByCustomer($customer, true);
+		   $_productCollection = $wishlist->getItemCollection();
+		   if(count($_productCollection)>0)
+		   {
+		   	$product_ids=array();
+				foreach ($_productCollection as $item)
+				{
+					$product_logs_collection=Mage::getModel('wishlistnotificationbywli/wishlistnotificationbywli')
+							->getCollection()->addFieldToFilter('product_entity_id', array('eq' => $item->getProductId()))
+							->addFieldToFilter('created_time', array('gt' => $item->getAddedAt()));
+						 	foreach($product_logs_collection as $ids)
+						 	{
+						 		$product_ids[]=$ids->getProductEntityId();	
+						 	}
+				}
+			  if(count($product_ids)>0)
+			  {
+			  	$wishlist1 = Mage::getModel('wishlist/wishlist')->loadByCustomer($customer, true);
+				$_productCollection1 = $wishlist1->getItemCollection()->addFieldToFilter('product_id', 
+				array('in' => array($product_ids)));
+				$wishlistData=$_productCollection1->getData();
+				if(!empty($wishlistData))
+	 			{
+	 			$url= Mage::getBaseUrl()."wishlistnotificationbywli".DS."account".DS."setwishlist";
+	 			?>
+	 			<script>
+	 				Dialog.info({url: "<?php echo $url; ?>", options: {method: 'get'},showEffectOptions: {duration:1.5},destroyOnClose:true}, 
+            {closable:true,className: "magento",windowClassName:'popup-window',width:700,height:160,id:'browser_window',showEffect:Effect.BlindDown, hideEffect: Effect.SwitchOff, draggable:true, wiredDrag: true, zIndex: 100, resizable: true, title: "Your Wishlist Products List Purchase Your Wished Product...!",destroyOnClose:true,recenterAuto:true,minimizable:true,
+            }); 
+	 			</script>
+	 			<?php	
+	 			}
+			  }
+		   }
+		}
+	} 
+}
+

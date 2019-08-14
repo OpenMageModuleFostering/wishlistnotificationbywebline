@@ -1,0 +1,39 @@
+/* Data Table */
+.datatable { width:100%; border:1px solid #bebcb7; }
+.datatable .odd  { background:#f8f7f5 }
+.datatable .even { background:#eeeded; }
+/*.data-table tr.odd:hover,
+.data-table tr.even:hover { background:#ebf1f6; }*/
+.datatable td.last,
+.datatable th.last { border-right:0; }
+.datatable tr.last th,
+.datatable tr.last td { border-bottom:0 !important; }
+.datatable th { padding:3px 8px; font-weight:bold; }
+.datatable td { padding:3px 8px; }
+
+.datatable thead th { font-weight:bold; border-right:1px solid #c2d3e0; padding:2px 8px; color:#0a263c; white-space:nowrap; vertical-align:middle; }
+.datatable thead th.wrap { white-space:normal; }
+.datatable thead th a,
+.datatable thead th a:hover { color:#fff; }
+.datatable thead th { background: #d9e5ee; }
+.datatable thead th .tax-flag { font-size:11px; white-space:nowrap; }
+
+.datatable tfoot { border-bottom:1px solid #d9dde3; }
+.datatable tfoot tr.first td { background:url(../images/bkg_tfoot.gif) 0 0 repeat-x; }
+.datatable tfoot tr { background-color:#dee5e8 !important; }
+.datatable tfoot td { padding-top:1px; padding-bottom:1px; border-bottom:0; border-right:1px solid #d9dde3; }
+
+
+.datatable tbody th,
+.datatable tbody td { border-bottom:1px solid #d9dde3; border-right:1px solid #d9dde3; }
+/* Bundle products tables */
+.datatable tbody.odd tr { background:#f8f7f5 !important; }
+.datatable tbody.even tr { background:#f6f6f6 !important; }
+.datatable tbody.odd tr td,
+.datatable tbody.even tr td { border-bottom:0; }
+.datatable tbody.odd tr.border td,
+.datatable tbody.even tr.border td { border-bottom:1px solid #d9dde3; }
+
+.datatable tbody td .option-label { font-weight:bold; font-style:italic; }
+.datatable tbody td .option-value { padding-left:10px; }
+</style>

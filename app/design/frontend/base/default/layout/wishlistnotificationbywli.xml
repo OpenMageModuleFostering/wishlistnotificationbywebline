@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">	
+    <customer_account_index translate="label">
+		 <reference name="head">
+		 <action method="addJs"><script>prototype/window.js</script></action>
+		   <action method="addItem"><type>js_css</type><name>prototype/windows/themes/default.css</name></action>
+		   <action method="addItem"><type>js_css</type><name>prototype/windows/themes/magento.css</name></action>
+		 	 <action method="addItem"><type>js_css</type><name>wishlistnotificationbywli/datatable.css</name></action>
+	    </reference>
+    	   <reference name="content">
+          <block type="wishlistnotificationbywli/Notification" name="wishlistnotificationbywli" template="wishlistnotificationbywli/popup.phtml" />
+        </reference>
+    </customer_account_index>
+</layout>
