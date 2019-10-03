@@ -1,16 +1,19 @@
 {
-    "name": "OpenMageModuleFostering/wishlistnotificationbywebline",
+    "name": "OpenMageModuleFostering\/wishlistnotificationbywebline",
     "type": "magento-module",
     "license": "GNU",
     "homepage": "",
     "description": "Wishlist Notification By Webline",
     "authors": [
-    {
-        "name": "ATUL MEHTA",
-        "email": "partners@weblineindia.com"
-    }
-],
+        {
+            "name": "ATUL MEHTA",
+            "email": "partners@weblineindia.com"
+        }
+    ],
     "suggest": {
-        "magento-hackathon/magento-composer-installer": "*"
-    }
+        "magento-hackathon\/magento-composer-installer": "*"
+    },
+    "keywords": [
+        "openmage-module"
+    ]
 }
